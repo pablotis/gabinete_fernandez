@@ -1,0 +1,188 @@
+---
+title: "gabinete_fernandez"
+author: "Pablo Tiscornia"
+date: "7/12/2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+### Librerías y estructura de la carpeta
+library(tidyverse)
+library(openxlsx)
+library(ggthemes)
+library(hrbrthemes)
+library(waffle)
+library(ggpol)
+library(qualpalr)
+library(ggparliament)
+# dir.create("Fuentes")
+# dir.create("Imágenes")
+# dir.create("Anteriores")
+```
+
+Ayer (6/12/2019), el presidente electo, Alberto Fernandez, presentó su gabinete para los próximos 4 años de gobierno. A proposito, comencé a preguntarme cuán diferente podía ser respecto al anterior, del actual presidente Mauricio Macri, por lo que no hice más que empezar a juntar información. Como resultado, armé una pequeña base de datos de forma muy artesanal.
+
+```{r include=FALSE}
+base <- read.xlsx("Fuentes/gabinete_fernandez.xlsx")
+str(base)
+```
+
+Primeros resultados:
+
+Empecemos con la edad. El funcionario más jóven es MArtín Guzman, con 37 años. Del otro lado, Adriana Puiggrós es la funcionaria de mayor edad, con 78 años.
+En promedio, el gabinete de Alberto Fernandez tiene unos 53 años y más de la mitad de los y las funcionarias tienen o superan los 54 años.
+
+```{r include=FALSE}
+### Edad
+summary(base$edad, na.rm = TRUE)
+base$funcionario[base$edad == min(base$edad, na.rm = TRUE)]
+base$funcionario[base$edad == max(base$edad, na.rm = TRUE)]
+
+tabla_edad <- base %>% 
+  group_by(genero) %>% 
+  summarise(media = mean(edad, na.rm = T),
+            mediana = median(edad, na.rm = T),
+            Min = min(edad, na.rm = T),
+            Max = max(edad, na.rm = T))
+```
+
+```{r echo=FALSE}
+jpeg("Imágenes/gabinete_edad_en_barra.png", height=5, width=10, units="in", res=300, margin(1,1,1,1))
+tabla_edad %>% 
+  ggplot(aes(x = genero, y = media, fill = genero, label = round(media,1))) +
+  geom_col(colour = "black", position = "dodge", width = 0.5) +
+  geom_errorbar(aes(ymin = Min, ymax = Max), 
+                width = 0.3, show.legend = F, colour = "grey", alpha = 0.7) +
+
+  geom_text(vjust = -0.5) +
+  scale_fill_manual(values = c("#834ba0", "#4c9b82")) +
+  scale_y_continuous(limits = c(0,100)) +
+  theme_ipsum() +
+  theme(panel.grid.major = element_blank(),
+        legend.position = "none") +
+  labs(title = "Edad promedio según género del nuevo gabinete, anunciado por 
+       el Frente de Todxs. Diciembre de 2019",
+       caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky,
+       Noe Barral Grigera, Página12 y Wikipedia",
+       x = "Género", y = "Edad promedio") +
+  geom_hline(yintercept = 0)
+dev.off()
+```
+
+```{r}
+### Por sexo
+tabla_genero <- as.data.frame(table(base$genero))
+  
+tabla_genero <- tabla_genero %>% 
+  mutate(fraccion = round(Freq / sum(Freq)*100),2) %>% 
+  arrange(desc(Var1)) %>%
+  mutate(lab.ypos = round(cumsum(fraccion) - 0.5*fraccion),2)
+
+tabla_genero
+
+### Gráfico
+jpeg("Imágenes/gabinete_genero.png", height=5, width=10, units="in", res=300, margin(1,1,1,1))
+ggplot(tabla_genero, aes(x = 2, y = fraccion, fill = Var1)) +
+  geom_bar(stat = "identity", color = "white", alpha = 0.8) +
+  coord_polar(theta = "y", start = 0)+
+  geom_text(aes(y = lab.ypos, label = paste0(fraccion, "%")), color = "white")+
+  theme_void()+
+  theme(plot.title = element_text(size=14, face="bold", hjust = 0),
+        legend.key.size = unit(0.7, "cm"),
+        legend.key.width = unit(1,"cm")) +
+  xlim(0.5, 2.5) +
+  labs(title = "Porcentaje de funcionarios y funcionarias del gabinete del
+       Frente de Todxs por género. Diciembre de 2019", 
+       caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky,
+       Noe Barral Grigera, Página12 y Wikipedia") + 
+  scale_fill_manual(" ", values = c("#834ba0", "#4c9b82"))
+dev.off()
+```
+
+
+Edad de las y los funcionarios del gabinete del Frente de Todxs a Diciembre de 2019.
+
+```{r echo=FALSE}
+# tabla_carrera <- as.data.frame(table(base$carrera))
+# tabla_carrera %>% 
+#   arrange(desc(Freq))
+
+### Edad y Sexo de las y los funcionarios del nuevo gabinete del Frente de Todxs.
+jpeg("Imágenes/gabinete_edad_x_gabinete.png", height=8, width=15, units="in", res=300, margin(1,1,1,1))
+base %>% 
+  arrange(desc(edad)) %>% 
+  ggplot(aes(x = funcion, y = edad, shape = genero, color = genero)) +
+  geom_point(size = 3, alpha = 0.8) +
+  geom_text(aes(label = edad), hjust = -0.5, show.legend = F) +
+  scale_color_manual(values = c("Varón"="#4c9b82", "Mujer"="#834ba0")) + 
+  #geom_point(aes(), show.legend = FALSE) +
+  coord_flip() +
+  theme_ipsum() +
+  theme(
+      plot.title = element_text(size=15)) +
+      #panel.grid.major = element_blank()) +
+  labs(title = "Edad y género de las y los funcionarios responsables de 
+       cada ministerio / secretaría / empresa pública del Estado Argentino. Diciembre de 2019.",
+       caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky, 
+       Noe Barral Grigera, Página12 y Wikipedia",
+       y = "Edad", x = "Ministerio  / Secretaría / Organismo / Empresa pública")
+dev.off()
+```
+
+Urgueando un poco sobre la procedencia académica o profesional del nuevo gabinete encontramos las siguientes carreras:
+
+```{r}
+### Armo palet de colores
+pal <- qualpal(n = 14)
+
+### Armo tabla insumo
+tabla_carrera <- as.data.frame(table(x = as.factor(base$carrera))) %>% 
+  arrange(., desc(Freq)) %>% 
+  #mutate(colores = rev(pal$hex))
+  mutate(colores = rev(c("#A5AA99","#5D69B1","#52BCA3","#99C945","#CC61B0","#24796C","#DAA51B",
+                     "#764E9F","#ED645A","#CC3A8E","#E58606", "yellow", "blue", "black")))
+
+png("Imágenes/gabinete_carrera.png", height=6, width=9, units="in", res=300)
+ggplot_parliament(tabla_carrera$x, tabla_carrera$Freq, tabla_carrera$colores, border_color = "black") +
+  ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") + 
+  theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+dev.off()
+```
+
+
+
+```{r}
+### Universidad Pública / Privada
+tabla_tipo_gestion_univ <- as.data.frame(table(base$tipo_gestion_univ)) %>% 
+  arrange(., desc(Freq))
+class(tabla_tipo_gestion_univ)
+
+tabla_tipo_gestion_univ <- base %>% 
+  group_by(tipo_gestion_univ) %>% 
+  summarise("tipo_gestion" = (n())) %>% 
+  arrange(desc(tipo_gestion))
+
+tabla_tipo_gestion_univ$tipo_gestion_univ[3] <- "Sin dato"
+tabla_tipo_gestion_univ$tipo_gestion_univ <- factor(tabla_tipo_gestion_univ$tipo_gestion_univ,
+                                                    levels = c("Pública", "Privada", "Sin datos"))
+
+### Gráfico Wafle
+png("Imágenes/gabinete_tipo_univ.png", height=6, width=9, units="in", res=300)
+tabla_tipo_gestion_univ %>% 
+  ggplot(aes(fill=tipo_gestion_univ, values=tipo_gestion)) +
+  geom_waffle(color = "white", size=0.7, n_rows = 4) +
+  scale_x_discrete(expand=c(0,0)) +
+  scale_y_discrete(expand=c(0,0)) +
+  ggthemes::scale_fill_tableau(name=NULL) +
+  coord_equal() +
+  labs(
+    title = "Tipo de gestión universitaria (pública / privada) a la que concurrieron
+    las y los funcionarios del nuevo gabinete del Frente de Todxs"
+  ) +
+  theme_ipsum_rc(grid="") +
+  theme_enhance_waffle()
+dev.off()
+```
