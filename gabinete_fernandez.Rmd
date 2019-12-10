@@ -18,6 +18,10 @@ library(waffle)
 library(ggpol)
 library(qualpalr)
 library(ggparliament)
+library(ggpubr)
+library(gridExtra)
+library(grid)
+library(lisa)
 # dir.create("Fuentes")
 # dir.create("Imágenes")
 # dir.create("Anteriores")
@@ -26,8 +30,22 @@ library(ggparliament)
 Ayer (6/12/2019), el presidente electo, Alberto Fernandez, presentó su gabinete para los próximos 4 años de gobierno. A proposito, comencé a preguntarme cuán diferente podía ser respecto al anterior, del actual presidente Mauricio Macri, por lo que no hice más que empezar a juntar información. Como resultado, armé una pequeña base de datos de forma muy artesanal.
 
 ```{r include=FALSE}
-base <- read.xlsx("Fuentes/gabinete_fernandez.xlsx")
+base_f_d_t <- read.xlsx("Fuentes/gabinete_fernandez.xlsx", sheet = "Fernandez_datos") %>% 
+  mutate(gobierno = "Frente de Todxs")
+
+base_j_x_c <- read.xlsx("Fuentes/gabinete_fernandez.xlsx", sheet = "Macri_datos") %>% 
+  mutate(gobierno = "Cambiemos")
+
+base <- bind_rows(base_f_d_t, base_j_x_c)
+
+str(base_f_d_t)
+str(base_j_x_c)
 str(base)
+
+base <- base %>% 
+  mutate(edad = case_when(gobierno == "Frente de Todxs" ~ edad,
+                          gobierno == "Cambiemos" ~ edad_2015))
+
 ```
 
 Primeros resultados:
@@ -37,12 +55,21 @@ En promedio, el gabinete de Alberto Fernandez tiene unos 53 años y más de la m
 
 ```{r include=FALSE}
 ### Edad
-summary(base$edad, na.rm = TRUE)
-base$funcionario[base$edad == min(base$edad, na.rm = TRUE)]
-base$funcionario[base$edad == max(base$edad, na.rm = TRUE)]
+tabla_edad_tot <- base %>% 
+  group_by(gobierno) %>% 
+  summarise(media = mean(edad, na.rm = T),
+            mediana = median(edad, na.rm = T),
+            Min = min(edad, na.rm = T),
+            Max = max(edad, na.rm = T))
 
-tabla_edad <- base %>% 
-  group_by(genero) %>% 
+base$funcionario[base$edad == min(base$edad[base$gobierno == "Cambiemos"], na.rm = TRUE)]
+base$funcionario[base$edad == min(base$edad[base$gobierno == "Frente de Todxs"], na.rm = TRUE)]
+
+base$funcionario[base$edad == max(base$edad[base$gobierno == "Cambiemos"], na.rm = TRUE)]
+base$funcionario[base$edad == max(base$edad[base$gobierno == "Frente de Todxs"], na.rm = TRUE)]
+
+tabla_edad_gob_genero <- base %>% 
+  group_by(gobierno, genero) %>% 
   summarise(media = mean(edad, na.rm = T),
             mediana = median(edad, na.rm = T),
             Min = min(edad, na.rm = T),
@@ -50,13 +77,12 @@ tabla_edad <- base %>%
 ```
 
 ```{r echo=FALSE}
-jpeg("Imágenes/gabinete_edad_en_barra.png", height=5, width=10, units="in", res=300, margin(1,1,1,1))
-tabla_edad %>% 
+jpeg("img/gabinete_edad_en_barra.png", height=5, width=10, units="in", res=300)
+tabla_edad_gob_genero %>% 
   ggplot(aes(x = genero, y = media, fill = genero, label = round(media,1))) +
   geom_col(colour = "black", position = "dodge", width = 0.5) +
   geom_errorbar(aes(ymin = Min, ymax = Max), 
                 width = 0.3, show.legend = F, colour = "grey", alpha = 0.7) +
-
   geom_text(vjust = -0.5) +
   scale_fill_manual(values = c("#834ba0", "#4c9b82")) +
   scale_y_continuous(limits = c(0,100)) +
@@ -68,37 +94,41 @@ tabla_edad %>%
        caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky,
        Noe Barral Grigera, Página12 y Wikipedia",
        x = "Género", y = "Edad promedio") +
-  geom_hline(yintercept = 0)
+  geom_hline(yintercept = 0) +
+  facet_wrap(~gobierno)
 dev.off()
 ```
 
 ```{r}
 ### Por sexo
-tabla_genero <- as.data.frame(table(base$genero))
+tabla_genero <- as.data.frame(table(base$gobierno, base$genero))
   
 tabla_genero <- tabla_genero %>% 
+  group_by(Var1) %>% 
   mutate(fraccion = round(Freq / sum(Freq)*100),2) %>% 
-  arrange(desc(Var1)) %>%
+  arrange(desc(Var2)) %>%
   mutate(lab.ypos = round(cumsum(fraccion) - 0.5*fraccion),2)
 
-tabla_genero
-
 ### Gráfico
-jpeg("Imágenes/gabinete_genero.png", height=5, width=10, units="in", res=300, margin(1,1,1,1))
-ggplot(tabla_genero, aes(x = 2, y = fraccion, fill = Var1)) +
-  geom_bar(stat = "identity", color = "white", alpha = 0.8) +
-  coord_polar(theta = "y", start = 0)+
-  geom_text(aes(y = lab.ypos, label = paste0(fraccion, "%")), color = "white")+
-  theme_void()+
-  theme(plot.title = element_text(size=14, face="bold", hjust = 0),
-        legend.key.size = unit(0.7, "cm"),
-        legend.key.width = unit(1,"cm")) +
-  xlim(0.5, 2.5) +
-  labs(title = "Porcentaje de funcionarios y funcionarias del gabinete del
-       Frente de Todxs por género. Diciembre de 2019", 
-       caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky,
-       Noe Barral Grigera, Página12 y Wikipedia") + 
-  scale_fill_manual(" ", values = c("#834ba0", "#4c9b82"))
+png("img/genero_x_gobierno.png", height=5, width=10, units="in", res=300)
+
+  tabla_genero %>% 
+    ggplot(aes(x = 2, y = fraccion, fill = Var2)) +
+    geom_bar(stat = "identity", color = "white", alpha = 0.8) +
+    coord_polar(theta = "y", start = 0)+
+    geom_text(aes(y = lab.ypos, label = paste0(fraccion, "%")), color = "white")+
+    theme_void()+
+    theme(plot.title = element_text(size=14, face="bold", hjust = 0.5, vjust = 11),
+          legend.key.size = unit(0.7, "cm"),
+          legend.key.width = unit(1,"cm"),
+          plot.margin = margin(1, 1, 1, 1, "cm")) +
+    xlim(0.5, 2.5) +
+    labs(title = "Distribución porcentual de funcionarios y funcionarias en los respectivos primeros \n gabinetes nacionales anunciados (diciembre de 2015 / 2019) por género",
+         caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky,
+       Noe Barral Grigera, Página12 y Wikipedia") +
+    scale_fill_manual(" ", values = c("#834ba0", "#4c9b82")) +
+    facet_wrap(~Var1, strip.position = "top")
+  
 dev.off()
 ```
 
@@ -106,50 +136,94 @@ dev.off()
 Edad de las y los funcionarios del gabinete del Frente de Todxs a Diciembre de 2019.
 
 ```{r echo=FALSE}
-# tabla_carrera <- as.data.frame(table(base$carrera))
-# tabla_carrera %>% 
-#   arrange(desc(Freq))
-
 ### Edad y Sexo de las y los funcionarios del nuevo gabinete del Frente de Todxs.
-jpeg("Imágenes/gabinete_edad_x_gabinete.png", height=8, width=15, units="in", res=300, margin(1,1,1,1))
-base %>% 
-  arrange(desc(edad)) %>% 
-  ggplot(aes(x = funcion, y = edad, shape = genero, color = genero)) +
-  geom_point(size = 3, alpha = 0.8) +
-  geom_text(aes(label = edad), hjust = -0.5, show.legend = F) +
-  scale_color_manual(values = c("Varón"="#4c9b82", "Mujer"="#834ba0")) + 
-  #geom_point(aes(), show.legend = FALSE) +
-  coord_flip() +
-  theme_ipsum() +
-  theme(
-      plot.title = element_text(size=15)) +
-      #panel.grid.major = element_blank()) +
-  labs(title = "Edad y género de las y los funcionarios responsables de 
-       cada ministerio / secretaría / empresa pública del Estado Argentino. Diciembre de 2019.",
+### Gráfico
+#png("img/gabinete_edadygenero_x_gabibente.png", height=8, width=15, units="in", res=300)
+for (i in unique(base$gobierno)){
+  
+  grafico <- base %>% 
+    arrange(desc(edad)) %>% 
+    filter(gobierno == i) %>% 
+    ggplot(aes(x = funcion, y = edad, shape = genero, color = genero)) +
+    geom_point(size = 3, alpha = 0.8) +
+    geom_text(aes(label = edad), hjust = -0.5, show.legend = F) +
+    scale_color_manual(values = c("Varón"="#4c9b82", "Mujer"="#834ba0")) + 
+    #geom_point(aes(), show.legend = FALSE) +
+    coord_flip() +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15),
+      plot.margin = margin(1, 1, 1, 1, "cm"))
+    #panel.grid.major = element_blank()) +
+    
+    assign(paste0("g_", i), grafico) 
+    
+}
+#dev.off() 
+`g_Frente de Todxs` +
+  labs(title = "Edad y género de las y los funcionarios responsables de \n cada ministerio / secretaría / empresa pública del Estado Argentino, \n para el primer gabinete anunciado por el Frente de Todxs (diciembre 2019)",
        caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky, 
        Noe Barral Grigera, Página12 y Wikipedia",
-       y = "Edad", x = "Ministerio  / Secretaría / Organismo / Empresa pública")
-dev.off()
+       y = "Edad", x = "Ministerio  / Secretaría / Organismo / Empresa pública") +
+  ggsave("img/gabinete_edad_genero_FdT.png", height=8, width=15, units="in", dpi = 300)
+
+### Guardo gráfico para Juntos por el Cambio
+g_Cambiemos +
+  labs(title = "Edad y género de las y los funcionarios responsables de \n cada ministerio / secretaría / empresa pública del Estado Argentino, \n para el primer gabinete anunciado por Cambiemos (diciembre 2015)",
+       caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky, 
+       Noe Barral Grigera, Página12 y Wikipedia",
+       y = "Edad", x = "Ministerio  / Secretaría / Organismo / Empresa pública") +
+  ggsave("img/gabinete_edad_genero_cambiemos.png", height=8, width=15, units="in", dpi = 300)
+
 ```
 
 Urgueando un poco sobre la procedencia académica o profesional del nuevo gabinete encontramos las siguientes carreras:
 
 ```{r}
-### Armo palet de colores
-pal <- qualpal(n = 14)
+# ### Armo palet de colores
+# pal <- qualpal(n = 33)
+
+# sum(table((table(base$carrera[base$gobierno=="Cambiemos"]))))
 
 ### Armo tabla insumo
-tabla_carrera <- as.data.frame(table(x = as.factor(base$carrera))) %>% 
-  arrange(., desc(Freq)) %>% 
-  #mutate(colores = rev(pal$hex))
-  mutate(colores = rev(c("#A5AA99","#5D69B1","#52BCA3","#99C945","#CC61B0","#24796C","#DAA51B",
-                     "#764E9F","#ED645A","#CC3A8E","#E58606", "yellow", "blue", "black")))
+tabla_carrera <- base %>% 
+  group_by(gobierno, carrera) %>% 
+  summarise(recuento = n()) %>% 
+  ungroup() %>% 
+  arrange(gobierno, recuento)
 
-png("Imágenes/gabinete_carrera.png", height=6, width=9, units="in", res=300)
-ggplot_parliament(tabla_carrera$x, tabla_carrera$Freq, tabla_carrera$colores, border_color = "black") +
-  ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") + 
-  theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+png("img/gabinete_carrera_x_gobierno.png", height=8, width=12, units="in", res=300)
+tabla_carrera %>% 
+   mutate(carrera = fct_reorder(carrera, recuento)) %>%
+  ggplot(aes(recuento, carrera, label = recuento, color = gobierno)) +
+         geom_segment(aes(x = 0, y = carrera, xend = recuento, yend = carrera), color = "grey50") +
+        geom_point(size = 7) +
+        geom_text(color = "white", size = 2) +
+  facet_wrap(~gobierno, scales = "free_y") +
+  theme_minimal(base_family="Arial Narrow") +
+  theme(panel.grid.major.y=element_blank(),
+        panel.grid.minor=element_blank(),
+        axis.line.y=element_line(color="#2b2b2b", size=0.15),
+        #axis.text.y=element_text(margin=margin(r=-5, l=0)),
+        #plot.margin=unit(rep(30, 4), "pt"),
+        plot.title=element_text(face="bold"),
+        plot.subtitle=element_text(margin=margin(b=10)),
+        plot.caption=element_text(size=8, margin=margin(t=10))) +
+    scale_color_manual(values = c("#F9E583", "#4B6892")) +
+  labs(title = "Distribución de las y los funcionarios en los primeros gabinetes \n anunciados por Cambiemos (dic-2015) y el Frente de Todxs (dic-2019), \n según carrera de grado de la cual egresaron",
+       caption = "Fuente: Elaboración propia en base a publicaciónes de Maia Jastreblansky,
+       Noe Barral Grigera, Página12 y Wikipedia",
+       x = "Cantidad", y = "Carrera de grado")
 dev.off()
+
+#source("Fuentes/ggplot_parliament.R")
+# 
+# ggplot_parliament(tabla_carrera$carrera, 
+#                   tabla_carrera$recuento, 
+#                   tabla_carrera$colores, border_color = "black") +
+#   ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") + 
+#   theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+# dev.off()
 ```
 
 
@@ -161,16 +235,20 @@ tabla_tipo_gestion_univ <- as.data.frame(table(base$tipo_gestion_univ)) %>%
 class(tabla_tipo_gestion_univ)
 
 tabla_tipo_gestion_univ <- base %>% 
-  group_by(tipo_gestion_univ) %>% 
+  group_by(gobierno, tipo_gestion_univ) %>% 
   summarise("tipo_gestion" = (n())) %>% 
-  arrange(desc(tipo_gestion))
+  arrange(desc(tipo_gestion)) %>% 
+  ungroup()
 
-tabla_tipo_gestion_univ$tipo_gestion_univ[3] <- "Sin dato"
-tabla_tipo_gestion_univ$tipo_gestion_univ <- factor(tabla_tipo_gestion_univ$tipo_gestion_univ,
-                                                    levels = c("Pública", "Privada", "Sin datos"))
+tabla_tipo_gestion_univ <- tabla_tipo_gestion_univ %>% 
+  mutate(tipo_gestion_univ = factor(tipo_gestion_univ,
+                              levels = c("Pública", "Privada", "Sin dato")))
 
 ### Gráfico Wafle
-png("Imágenes/gabinete_tipo_univ.png", height=6, width=9, units="in", res=300)
+library(waffle)
+
+png("img/gabinete_tipo_univ_x_gobierno.png", height=6, width=9, units="in", res=300)
+
 tabla_tipo_gestion_univ %>% 
   ggplot(aes(fill=tipo_gestion_univ, values=tipo_gestion)) +
   geom_waffle(color = "white", size=0.7, n_rows = 4) +
@@ -179,10 +257,20 @@ tabla_tipo_gestion_univ %>%
   ggthemes::scale_fill_tableau(name=NULL) +
   coord_equal() +
   labs(
-    title = "Tipo de gestión universitaria (pública / privada) a la que concurrieron
-    las y los funcionarios del nuevo gabinete del Frente de Todxs"
-  ) +
+    title = "Tipo de gestión universitaria (pública / privada) de \n la que egresaron las y los funcionarios de los \n primeros gabientes, anunciados por los gobiernos \n de Cambiemos (dic-2015) y el \n Frente de Todxs (dic-2019)",
+    caption = "Fuente: Elaboración propia en base a publicaciónes \n de Maia Jastreblansky, Noe Barral Grigera, Página12 y Wikipedia") +
   theme_ipsum_rc(grid="") +
-  theme_enhance_waffle()
+  theme_enhance_waffle() +
+  facet_wrap(~gobierno, ncol=1) +
+  theme(plot.margin = margin(1, 4, 1, 1, "cm"))
+
 dev.off()
 ```
+
+
+```{r}
+library(eph)
+tabla(round(prop.table(table(base$lugar_nacimiento, base$gobierno),2)*100,1)
+
+```
+

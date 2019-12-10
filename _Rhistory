@@ -1,0 +1,512 @@
+ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") +
+theme(plot.title=element_text(size=14, face="bold", hjust = 0.5)) +
+facet_wrap(~ tabla_carrera$gobierno)
+ggplot_parliament(tabla_carrera$carrera,
+tabla_carrera$recuento,
+tabla_carrera$colores, border_color = "black") +
+ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") +
+theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+tabla_carrera <- tabla_carrera %>%
+arrange(gobierno,recuento) %>% # sort data based on group and value
+mutate(orden = row_number() +1) # this will be used as x axis
+ggplot_parliament(tabla_carrera$carrera,
+tabla_carrera$recuento,
+tabla_carrera$colores, border_color = "black") +
+ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") +
+theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+tabla_carrera <- tabla_carrera %>%
+arrange(gobierno,recuento) %>% # sort data based on group and value
+mutate(orden = rev(row_number())) # this will be used as x axis
+ggplot_parliament(tabla_carrera$carrera,
+tabla_carrera$recuento,
+tabla_carrera$colores, border_color = "black") +
+ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") +
+theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+tabla_carrera <- tabla_carrera %>%
+arrange(gopbierno, carrera) %>%
+mutate(orden = nrow(total) - row_number() + 1)
+tabla_carrera <- tabla_carrera %>%
+arrange(gobierno, carrera) %>%
+mutate(orden = nrow(total) - row_number() + 1)
+tabla_carrera <- tabla_carrera %>%
+arrange(gobierno, carrera) %>%
+mutate(orden = nrow(tabla_carrera) - row_number() + 1)
+ggplot_parliament(tabla_carrera$carrera,
+tabla_carrera$recuento,
+tabla_carrera$colores, border_color = "black") +
+ggtitle("Funcionarios y funcionarias del nuevo gabinete, según su profesión. Diciembre de 2019") +
+theme(plot.title=element_text(size=14, face="bold", hjust = 0.5))
+install.packages("ggpubr")
+install.packages("ggpubr")
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "descending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray")
+library(ggpubr)
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "descending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray")
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "descending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "descending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+?ggdotchart
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+ggdotchart(tabla_carrera, x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+#add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Frente de Todxs") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Frente de Todxs") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Frente de Todxs") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(., gobierno == "Frente de Todxs") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(., gobierno == "Frente de Todxs") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera_fdt <- tabla_carrera %>%
+filter(gobierno == "Frente de Todxs")
+tabla_carrera_fdt <- tabla_carrera %>%
+filter(gobierno == "Frente de Todxs")
+tabla_carrera_fdt <- tabla_carrera %>%
+filter(gobierno == "Frente de Todxs")
+tabla_carrera_fdt <- tabla_carrera %>%
+filter(gobierno == "Cambiemos")
+### Armo tabla insumo
+tabla_carrera <- base %>%
+group_by(gobierno, carrera) %>%
+summarise(recuento = n()) %>%
+ungroup() %>%
+mutate(colores = rev(pal$hex))
+### Librerías y estructura de la carpeta
+library(tidyverse)
+library(openxlsx)
+library(ggthemes)
+library(hrbrthemes)
+library(waffle)
+library(ggpol)
+library(qualpalr)
+library(ggparliament)
+library(ggpubr)
+library(gridExtra)
+library(grid)
+# dir.create("Fuentes")
+# dir.create("Imágenes")
+# dir.create("Anteriores")
+tabla_carrera %>%
+filter(gobierno == "Cambiemos") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Cambiemos") %>%
+ggdotchart(x = "carrera", y = "recuento",
+#color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Cambiemos") %>%
+ggdotchart(x = "carrera", y = "recuento",
+#color = "gobierno",                                # Color by groups
+#palette = c("#00AFBB", "#E7B800"), # Custom color palette
+palette = c("#00AFBB"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+#add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+#group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Cambiemos") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento,1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+filter(gobierno == "Cambiemos") %>%
+ggdotchart(x = "carrera", y = "recuento",
+color = "gobierno",                                # Color by groups
+palette = c("#00AFBB", "#E7B800"), # Custom color palette
+sorting = "ascending",                       # Sort value in descending order
+add = "segments",                             # Add segments from y = 0 to dots
+add.params = list(color = "lightgray", size = 2), # Change segment color and size
+group = "gobierno",                                # Order by groups
+dot.size = 6,                                 # Large dot size
+label = round(tabla_carrera$recuento[tabla_carrera$gobierno=="Cambiemos"],1),                        # Add mpg values as dot labels
+font.label = list(color = "white", size = 9,
+vjust = 0.5),               # Adjust label parameters
+ggtheme = theme_pubr()                        # ggplot2 theme
+)+
+geom_hline(yintercept = 0, linetype = 2, color = "lightgray") +
+coord_flip()
+tabla_carrera %>%
+mutate(gobierno = as.factor(gobierno),
+carrera = as.factor(carrera)) %>%
+#mutate(carrera = reorder(carrera, recuento)) %>%
+arrange(desc(recuento)) %>%
+ggplot(aes(x = carrera, y = recuento, fill = gobierno, label = recuento)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+facet_wrap(~ gobierno)
+library(lisa)
+tabla_carrera %>%
+mutate(gobierno = as.factor(gobierno),
+carrera = as.factor(carrera)) %>%
+#mutate(carrera = reorder(carrera, recuento)) %>%
+arrange(desc(recuento)) %>%
+ggplot(aes(x = carrera, y = recuento, fill = gobierno, label = recuento)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+facet_wrap(~ gobierno)
+plot_data %>%
+mutate(gobierno = as.factor(gobierno),
+carrera = as.factor(carrera)) %>%
+#mutate(carrera = reorder(carrera, recuento)) %>%
+arrange(desc(recuento)) %>%
+ggplot(aes(x = carrera, y = recuento, fill = gobierno, label = recuento)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+facet_wrap(~ gobierno)
+plot_data %>%
+ggplot(aes(x = carrera, y = recuento, fill = gobierno, label = recuento)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+facet_wrap(~ gobierno)
+plot_data %>%
+ggplot(aes(x = carrera, y = recuento, fill = gobierno, label = recuento)) +
+geom_bar(stat = "identity", position = "dodge", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip()
+plot_data %>%
+ggplot(aes(x = carrera, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip()
+plot_data %>%
+filter(gobierno == "Cambiemos") %>%
+ggplot(aes(x = carrera, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip()
+plot_data
+plot_data %>%
+filter(gobierno == "Cambiemos") %>%
+ggplot(aes(x = rank, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip()
+plot_data %>%
+filter(gobierno == "Cambiemos") %>%
+ggplot(aes(x = carrera, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+scale_x_continuous(labels = carrera)
+plot_data %>%
+filter(gobierno == "Cambiemos") %>%
+ggplot(aes(x = carrera, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+scale_x_continuous(labels = plot_data$carrera)
+plot_data %>%
+filter(gobierno == "Cambiemos") %>%
+ggplot(aes(x = carrera, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+scale_x_discrete(labels = plot_data$carrera)
+plot_data %>%
+filter(gobierno == "Cambiemos") %>%
+ggplot(aes(x = carrera, y = recuento, label = recuento)) +
+geom_bar(stat = "identity", width = 0.5)+
+geom_text(nudge_y = 0.4,  size = 3) +
+scale_fill_manual(values = rev(lisa$`Jean-MichelBasquiat`)) +
+theme_ipsum_rc(grid="")  +
+coord_flip() +
+scale_x_discrete(labels = carrera)
+gg <- ggplot(tabla_carrera, aes(reorder(carrera, recuento), recuentpo))
+gg
+gg <- ggplot(tabla_carrera, aes(reorder(carrera, recuento), recuento))
+gg
+gg <- gg + geom_lollipop(point.colour="steelblue", point.size=3)
+library(ggplot2)
+library(ggalt)
+library(scales)
+gg <- ggplot(tabla_carrera, aes(reorder(carrera, recuento), recuento))
+gg <- gg + geom_lollipop(point.colour="steelblue", point.size=3)
+gg
+gg <- gg + scale_y_continuous(expand=c(0,0), labels=recuento,
+breaks=seq(0, 1, by=0.2), limits=c(0, 1))
+gg <- gg + coord_flip()
+gg
