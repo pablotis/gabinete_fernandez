@@ -27,8 +27,6 @@ library(lisa)
 # dir.create("Anteriores")
 ```
 
-Ayer (6/12/2019), el presidente electo, Alberto Fernandez, presentó su gabinete para los próximos 4 años de gobierno. A proposito, comencé a preguntarme cuán diferente podía ser respecto al anterior, del actual presidente Mauricio Macri, por lo que no hice más que empezar a juntar información. Como resultado, armé una pequeña base de datos de forma muy artesanal.
-
 ```{r include=FALSE}
 base_f_d_t <- read.xlsx("Fuentes/gabinete_fernandez.xlsx", sheet = "Fernandez_datos") %>% 
   mutate(gobierno = "Frente de Todxs")
@@ -47,11 +45,6 @@ base <- base %>%
                           gobierno == "Cambiemos" ~ edad_2015))
 
 ```
-
-Primeros resultados:
-
-Empecemos con la edad. El funcionario más jóven es MArtín Guzman, con 37 años. Del otro lado, Adriana Puiggrós es la funcionaria de mayor edad, con 78 años.
-En promedio, el gabinete de Alberto Fernandez tiene unos 53 años y más de la mitad de los y las funcionarias tienen o superan los 54 años.
 
 ```{r include=FALSE}
 ### Edad
@@ -176,8 +169,6 @@ g_Cambiemos +
   ggsave("img/gabinete_edad_genero_cambiemos.png", height=8, width=15, units="in", dpi = 300)
 
 ```
-
-Urgueando un poco sobre la procedencia académica o profesional del nuevo gabinete encontramos las siguientes carreras:
 
 ```{r}
 # ### Armo palet de colores
